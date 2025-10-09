@@ -1,115 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tela de Criação de IA</title>
-  <style>
-    :root{--red:#c00000;--red-dark:#800000;--glow:rgba(192,0,0,.7)}
-    *{box-sizing:border-box}
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif}
-    .hidden{display:none}
-    .container{width:100%;max-width:350px;padding:30px;text-align:center;background:#1a1a1a;border-radius:20px;box-shadow:0 0 10px rgba(0,0,0,.5)}
-    .logo{width:200px;margin-bottom:30px}
-    .title{font-size:24px;font-weight:700;margin-bottom:10px}
-    .subtitle{font-size:16px;color:#ddd;margin-bottom:40px}
-    .input-field{width:100%;padding:15px;margin-bottom:20px;border:0;border-radius:10px;background:#333;color:#fff;font-size:16px}
-    .input-field::placeholder{color:#aaa}
-    .button{width:100%;padding:15px;margin-bottom:10px;border:0;border-radius:10px;color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:.25s;background:linear-gradient(90deg,var(--red-dark),var(--red))}
-    .button:hover{transform:scale(1.02);background:linear-gradient(90deg,#a00000,#e00000)}
-    .privacy-text{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:20px;color:#aaa;font-size:12px}
-    .privacy-text::before{content:"🔒"}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tela de Criação de IA</title>
+<style>
+  body{background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+  .container{background:#1a1a1a;border-radius:20px;padding:30px;max-width:350px;text-align:center;box-shadow:0 0 10px rgba(0,0,0,.5)}
+  .hidden{display:none}
+  .logo{width:200px;margin-bottom:30px}
+  .title{font-size:24px;font-weight:700;margin-bottom:10px}
+  .subtitle{font-size:16px;margin-bottom:40px;color:#ddd}
+  .input-field{background:#333;border:0;border-radius:10px;padding:15px;width:100%;box-sizing:border-box;color:#fff;font-size:16px;margin-bottom:20px}
+  .input-field::placeholder{color:#aaa}
+  .button{background:linear-gradient(to right,#800000,#c00000);border:0;border-radius:10px;padding:15px;width:100%;color:#fff;font-size:16px;font-weight:700;margin-bottom:10px;cursor:pointer;transition:.3s}
+  .button:hover{background:linear-gradient(to right,#a00000,#e00000);transform:scale(1.02)}
+  .privacy-text{font-size:12px;color:#aaa;margin-top:20px;display:flex;align-items:center;justify-content:center}
+  .privacy-text::before{content:'🔒';margin-right:5px}
 
-    /* Loading */
-    .loading-title{font-size:20px;margin-bottom:20px}
-    .silhouette-container{position:relative;width:220px;height:280px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
-    .female-silhouette{position:relative;width:180px;height:260px;display:flex;align-items:center;justify-content:center}
-    .silhouette-image{width:100%;height:100%;object-fit:contain;filter:brightness(0) drop-shadow(0 0 30px var(--glow));opacity:0;animation:materialize 2.5s forwards,pulse 2s infinite 2.5s}
-    .silhouette-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(192,0,0,.1) 30%,rgba(192,0,0,.2) 50%,rgba(192,0,0,.1) 70%,transparent 100%);mix-blend-mode:screen;opacity:0;animation:overlayGlow 3s infinite 2s}
-    .scan-line{position:absolute;left:-10%;width:120%;height:2px;background:linear-gradient(90deg,transparent,red,var(--red),red,transparent);opacity:0;box-shadow:0 0 10px rgba(255,0,0,.6);animation:scan 3s infinite}
-    .scan-line:nth-child(3){animation-delay:.3s}
-    .scan-line:nth-child(4){animation-delay:.6s}
-    .scan-line:nth-child(5){animation-delay:.9s}
-    .holo-particle{position:absolute;width:2px;height:20px;background:linear-gradient(180deg,transparent,red,transparent);opacity:0;animation:rise 2s infinite}
-    .holo-particle:nth-child(6){left:20%}
-    .holo-particle:nth-child(7){left:40%;animation-delay:.4s}
-    .holo-particle:nth-child(8){left:60%;animation-delay:.8s}
-    .holo-particle:nth-child(9){left:80%;animation-delay:1.2s}
-    .digital-particle{position:absolute;width:4px;height:4px;border-radius:50%;background:radial-gradient(circle,red,var(--red));opacity:0;box-shadow:0 0 6px rgba(255,0,0,.6);animation:float 3s infinite}
-    .digital-particle:nth-child(10){top:20%;left:10%}
-    .digital-particle:nth-child(11){top:50%;right:10%;animation-delay:.5s}
-    .digital-particle:nth-child(12){bottom:20%;left:15%;animation-delay:1s}
-    .digital-particle:nth-child(13){top:30%;right:15%;animation-delay:1.5s}
-    .digital-particle:nth-child(14){bottom:30%;right:20%;animation-delay:2s}
-    .data-stream{position:absolute;font:700 10px "Courier New",monospace;color:red;text-shadow:0 0 5px rgba(255,0,0,.5);opacity:0;animation:data 2s infinite}
-    .data-stream:nth-child(15){top:10px;left:-50px}
-    .data-stream:nth-child(16){top:100px;right:-50px;animation-delay:.5s}
-    .data-stream:nth-child(17){bottom:50px;left:-50px;animation-delay:1s}
-    .numbers{display:flex;justify-content:space-around;margin-bottom:20px;color:#aaa;font:14px "Courier New",monospace}
-    .progress-container{margin-bottom:10px}
-    .progress-label{font-size:14px;text-align:left;margin-bottom:5px}
-    .progress-bar{width:100%;height:10px;border-radius:5px;overflow:hidden;background:#333}
-    .progress-fill{height:100%;width:0;border-radius:5px;transition:width .5s ease-in-out;background:linear-gradient(90deg,var(--red-dark),var(--red));box-shadow:0 0 10px rgba(192,0,0,.5)}
-    .progress-percent{font-size:12px;text-align:right;margin-top:-15px}
+  /* MODAIS */
+  .question-modal{position:fixed;inset:0;background:rgba(0,0,0,.95);display:none;justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(10px)}
+  .question-modal.active{display:flex;animation:fadeIn .5s}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .question-card{background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;border:2px solid rgba(192,0,0,.5);box-shadow:0 0 50px rgba(192,0,0,.7);animation:slideUp .5s}
+  @keyframes slideUp{from{transform:translateY(50px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 
-    /* Chat */
-    .timer-title{font-size:24px;font-weight:700;margin-bottom:10px}
-    .timer{color:#ff0}
-    .chat-subtitle{font-size:14px;color:#ddd;margin-bottom:20px}
-    .chat-box{height:200px;overflow-y:auto;text-align:left;background:#333;border-radius:10px;padding:10px;margin-bottom:20px}
-    .message{margin:5px 0;font-size:14px}
-    .online{font-size:12px;color:#aaa}
+  /* IMAGENS NAS PERGUNTAS — AGORA SEM CORTE */
+  .question-image{
+    display:block;
+    width:100%;
+    max-width:100%;
+    height:auto;                 /* remove altura fixa */
+    object-fit:contain;          /* mostra a imagem inteira */
+    border-radius:15px;
+    margin:0 auto 25px;
+    box-shadow:0 0 30px rgba(192,0,0,.6);
+    border:2px solid rgba(192,0,0,.3);
+  }
 
-    /* Modais */
-    .question-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.95);backdrop-filter:blur(10px);z-index:1000}
-    .question-modal.active{display:flex;animation:fade .5s}
-    .question-card{width:min(400px,90vw);padding:30px;text-align:center;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);border-radius:20px;border:2px solid rgba(192,0,0,.5);box-shadow:0 0 50px rgba(192,0,0,.7);animation:slideUp .5s}
-    .question-image{width:100%;max-width:280px;height:200px;object-fit:cover;border-radius:15px;margin-bottom:25px;border:2px solid rgba(192,0,0,.3);box-shadow:0 0 30px rgba(192,0,0,.6)}
-    .question-title{font-size:24px;font-weight:700;margin-bottom:30px;text-shadow:0 0 15px var(--glow)}
-    .question-buttons{display:flex;gap:25px;justify-content:center}
-    .question-btn{padding:15px 45px;border:0;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;transition:.25s;text-transform:uppercase;letter-spacing:1px}
-    .question-btn.yes{color:#000;background:linear-gradient(135deg,#00a000,#0f0);box-shadow:0 4px 15px rgba(0,255,0,.3)}
-    .question-btn.yes:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 6px 25px rgba(0,255,0,.5)}
-    .question-btn.no{color:#fff;background:linear-gradient(135deg,#800,#f00);box-shadow:0 4px 15px rgba(255,0,0,.3)}
-    .question-btn.no:hover{transform:scale(1.05) translateY(-2px);box-shadow:0 6px 25px rgba(255,0,0,.5)}
+  /* Cartão especial para vídeo (não interfere nas imagens) */
+  .video-card{padding:0!important;overflow:hidden;position:relative;height:550px;width:380px;max-width:90vw;background:transparent!important;border:none!important;box-shadow:none!important;animation:videoCardAppear .6s ease-out}
+  @keyframes videoCardAppear{from{transform:scale(.9) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+  .question-video-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:20px;border:2px solid rgba(192,0,0,.6);box-shadow:0 0 60px rgba(192,0,0,.8),0 0 100px rgba(192,0,0,.4);animation:videoGlow 2s infinite}
+  .video-content-overlay{position:absolute;left:0;right:0;bottom:0;padding:50px 30px 30px;display:flex;flex-direction:column;align-items:center}
+  @keyframes videoGlow{0%,100%{box-shadow:0 0 60px rgba(192,0,0,.8),0 0 100px rgba(192,0,0,.4);border-color:rgba(192,0,0,.6)}50%{box-shadow:0 0 80px rgba(255,0,0,1),0 0 120px rgba(192,0,0,.6);border-color:rgba(255,0,0,.8)}}
 
-    /* Modal 3 (vídeo) */
-    .video-card{width:min(380px,90vw);height:550px;padding:0;overflow:hidden;background:transparent;border:none;box-shadow:none;animation:videoCard .6s ease-out}
-    .question-video-full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:20px;border:2px solid rgba(192,0,0,.6);box-shadow:0 0 60px rgba(192,0,0,.8),0 0 100px rgba(192,0,0,.4);animation:videoGlow 2s infinite}
-    .video-content-overlay{position:absolute;left:0;right:0;bottom:0;padding:50px 30px 30px;display:flex;flex-direction:column;align-items:center}
+  .question-title{font-size:24px;font-weight:700;color:#fff;margin-bottom:30px;text-shadow:0 0 15px rgba(192,0,0,.7);line-height:1.3}
+  .question-buttons{display:flex;gap:25px;justify-content:center}
+  .question-btn{padding:15px 45px;border:0;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;transition:.3s;text-transform:uppercase;letter-spacing:1px}
+  .question-btn.yes{background:linear-gradient(135deg,#00a000,#00ff00);color:#000;box-shadow:0 4px 15px rgba(0,255,0,.3)}
+  .question-btn.yes:hover{background:linear-gradient(135deg,#00c000,#00ff00);transform:scale(1.05) translateY(-2px);box-shadow:0 6px 25px rgba(0,255,0,.5)}
+  .question-btn.no{background:linear-gradient(135deg,#800000,#ff0000);color:#fff;box-shadow:0 4px 15px rgba(255,0,0,.3)}
+  .question-btn.no:hover{background:linear-gradient(135deg,#a00000,#ff0000);transform:scale(1.05) translateY(-2px);box-shadow:0 6px 25px rgba(255,0,0,.5)}
 
-    /* Keyframes */
-    @keyframes fade{from{opacity:0}to{opacity:1}}
-    @keyframes slideUp{from{transform:translateY(50px) scale(.9);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-    @keyframes videoCard{from{transform:scale(.9) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-    @keyframes videoGlow{0%,100%{box-shadow:0 0 60px rgba(192,0,0,.8),0 0 100px rgba(192,0,0,.4)}50%{box-shadow:0 0 80px rgba(255,0,0,1),0 0 120px rgba(192,0,0,.6)}}
-    @keyframes materialize{0%{opacity:0;transform:scale(.8) translateY(20px);filter:brightness(0) blur(10px) drop-shadow(0 0 50px red)}30%{opacity:.3;filter:brightness(0) blur(5px) drop-shadow(0 0 40px red)}60%{opacity:.7;transform:scale(.95) translateY(10px);filter:brightness(0) blur(2px) drop-shadow(0 0 35px red)}100%{opacity:1;transform:scale(1);filter:brightness(0) blur(0) drop-shadow(0 0 30px var(--glow))}}
-    @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(0) drop-shadow(0 0 30px var(--glow))}50%{transform:scale(1.03);filter:brightness(0) drop-shadow(0 0 45px red)}}
-    @keyframes overlayGlow{0%,100%{opacity:0}50%{opacity:1}}
-    @keyframes scan{0%{top:-5%;opacity:0;transform:scaleX(.5)}10%{opacity:1;transform:scaleX(1)}90%{opacity:1}100%{top:105%;opacity:0;transform:scaleX(.5)}}
-    @keyframes rise{0%{bottom:0;opacity:0;transform:scaleY(0)}20%{opacity:1;transform:scaleY(1)}80%{opacity:1}100%{bottom:100%;opacity:0;transform:scaleY(0)}}
-    @keyframes float{0%{opacity:0;transform:translate(0,0) scale(0)}25%{opacity:1;transform:translate(10px,-10px) scale(1)}50%{opacity:1;transform:translate(20px,-20px) scale(1.2)}75%{opacity:.5;transform:translate(30px,-30px) scale(.8)}100%{opacity:0;transform:translate(40px,-40px) scale(0)}}
-    @keyframes data{0%{opacity:0;transform:translateY(0) scale(.8)}20%{opacity:.6;transform:translateY(-5px)}50%{opacity:.4;transform:translateY(-10px)}80%{opacity:.6;transform:translateY(-15px)}100%{opacity:0;transform:translateY(-20px) scale(.8)}}
-    @media (max-width:420px){.container{padding:22px}}
-  </style>
+  /* LOADING */
+  .loading-title{font-size:20px;margin-bottom:20px}
+  .silhouette-container{position:relative;width:220px;height:280px;margin:0 auto 20px;display:flex;justify-content:center;align-items:center}
+  .female-silhouette{position:relative;width:180px;height:260px;display:flex;justify-content:center;align-items:center}
+  .silhouette-image{width:100%;height:100%;object-fit:contain;filter:brightness(0) drop-shadow(0 0 30px rgba(192,0,0,.7));opacity:0;animation:materializeWoman 2.5s forwards,pulse 2s infinite 2.5s}
+  @keyframes materializeWoman{
+    0%{opacity:0;transform:scale(.8) translateY(20px);filter:brightness(0) blur(10px) drop-shadow(0 0 50px rgba(192,0,0,1))}
+    30%{opacity:.3;filter:brightness(0) blur(5px) drop-shadow(0 0 40px rgba(192,0,0,.9))}
+    60%{opacity:.7;transform:scale(.95) translateY(10px);filter:brightness(0) blur(2px) drop-shadow(0 0 35px rgba(192,0,0,.8))}
+    100%{opacity:1;transform:scale(1) translateY(0);filter:brightness(0) blur(0) drop-shadow(0 0 30px rgba(192,0,0,.7))}
+  }
+  .silhouette-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(192,0,0,.1) 30%,rgba(192,0,0,.2) 50%,rgba(192,0,0,.1) 70%,transparent 100%);mix-blend-mode:screen;opacity:0;animation:overlayGlow 3s infinite 2s}
+  @keyframes overlayGlow{0%,100%{opacity:0}50%{opacity:1}}
+  .scan-line{position:absolute;width:120%;height:2px;left:-10%;background:linear-gradient(90deg,transparent,rgba(255,0,0,.8),rgba(192,0,0,1),rgba(255,0,0,.8),transparent);opacity:0;animation:scanBody 3s infinite;box-shadow:0 0 10px rgba(255,0,0,.6)}
+  .scan-line:nth-child(3){animation-delay:.3s}.scan-line:nth-child(4){animation-delay:.6s}.scan-line:nth-child(5){animation-delay:.9s}
+  @keyframes scanBody{0%{top:-5%;opacity:0;transform:scaleX(.5)}10%{opacity:1;transform:scaleX(1)}90%{opacity:1;transform:scaleX(1)}100%{top:105%;opacity:0;transform:scaleX(.5)}}
+  .holo-particle{position:absolute;width:2px;height:20px;background:linear-gradient(180deg,transparent,#f00,transparent);opacity:0;animation:holoRise 2s infinite}
+  .holo-particle:nth-child(6){left:20%}.holo-particle:nth-child(7){left:40%;animation-delay:.4s}.holo-particle:nth-child(8){left:60%;animation-delay:.8s}.holo-particle:nth-child(9){left:80%;animation-delay:1.2s}
+  @keyframes holoRise{0%{bottom:0;opacity:0;transform:scaleY(0)}20%{opacity:1;transform:scaleY(1)}80%{opacity:1;transform:scaleY(1)}100%{bottom:100%;opacity:0;transform:scaleY(0)}}
+  .digital-particle{position:absolute;width:4px;height:4px;background:radial-gradient(circle,#f00,#c00000);border-radius:50%;opacity:0;animation:floatParticle 3s infinite;box-shadow:0 0 6px rgba(255,0,0,.6)}
+  .digital-particle:nth-child(10){top:20%;left:10%}.digital-particle:nth-child(11){top:50%;right:10%;animation-delay:.5s}.digital-particle:nth-child(12){bottom:20%;left:15%;animation-delay:1s}.digital-particle:nth-child(13){top:30%;right:15%;animation-delay:1.5s}.digital-particle:nth-child(14){bottom:30%;right:20%;animation-delay:2s}
+  .data-stream{position:absolute;font-family:'Courier New',monospace;font-size:10px;color:#f00;opacity:0;animation:dataFlow 2s infinite;text-shadow:0 0 5px rgba(255,0,0,.5)}
+  .data-stream:nth-child(15){top:10px;left:-50px}.data-stream:nth-child(16){top:100px;right:-50px;animation-delay:.5s}.data-stream:nth-child(17){bottom:50px;left:-50px;animation-delay:1s}
+  @keyframes pulse{0%,100%{filter:brightness(0) drop-shadow(0 0 30px rgba(192,0,0,.7));transform:scale(1)}50%{filter:brightness(0) drop-shadow(0 0 45px rgba(255,0,0,1));transform:scale(1.03)}}
+  @keyframes floatParticle{0%{opacity:0;transform:translate(0,0) scale(0)}25%{opacity:1;transform:translate(10px,-10px) scale(1)}50%{opacity:1;transform:translate(20px,-20px) scale(1.2)}75%{opacity:.5;transform:translate(30px,-30px) scale(.8)}100%{opacity:0;transform:translate(40px,-40px) scale(0)}}
+  @keyframes dataFlow{0%{opacity:0;transform:translateY(0) scale(.8)}20%{opacity:.6;transform:translateY(-5px) scale(1)}50%{opacity:.4;transform:translateY(-10px) scale(1)}80%{opacity:.6;transform:translateY(-15px) scale(1)}100%{opacity:0;transform:translateY(-20px) scale(.8)}}
+  .numbers{font-size:14px;color:#aaa;margin-bottom:20px;display:flex;justify-content:space-around;font-family:'Courier New',monospace}
+  .progress-container{margin-bottom:10px}
+  .progress-label{font-size:14px;text-align:left;margin-bottom:5px}
+  .progress-bar{background:#333;border-radius:5px;height:10px;width:100%;position:relative;overflow:hidden}
+  .progress-fill{background:linear-gradient(to right,#800000,#c00000);height:100%;border-radius:5px;width:0;transition:width .5s ease-in-out;box-shadow:0 0 10px rgba(192,0,0,.5)}
+  .progress-percent{font-size:12px;text-align:right;margin-top:-15px}
+
+  /* CHAT */
+  .timer-title{font-size:24px;font-weight:700;margin-bottom:10px}
+  .timer{color:#ff0}
+  .chat-subtitle{font-size:14px;color:#ddd;margin-bottom:20px}
+  .chat-box{background:#333;border-radius:10px;padding:10px;height:200px;overflow-y:auto;margin-bottom:20px;text-align:left}
+  .message{margin:5px 0;font-size:14px}
+  .online{font-size:12px;color:#aaa}
+
+  @media (max-width:420px){
+    .video-card{height:75vh;width:92vw}
+  }
+</style>
 </head>
 <body>
-  <!-- Tela: Nome -->
-  <div id="name-container" class="container" role="region" aria-labelledby="ttl-name">
-    <img src="../wp-content/uploads/2025/07/logo-namoria-scaled.png" alt="NamorIA" class="logo" loading="lazy">
-    <div id="ttl-name" class="title">Agora dê um nome a ela!</div>
-    <p class="subtitle">Escolha o nome que desejar para a sua namorada</p>
-    <input id="ia-name" class="input-field" placeholder="Digite o nome dela" maxlength="40" autocomplete="off" />
-    <button id="btn-start" class="button">Dê vida à minha IA</button>
-    <p class="privacy-text">Sua IA ficará privada. Somente você a verá.</p>
+  <div id="name-container" class="container">
+    <img src="../wp-content/uploads/2025/07/logo-namoria-scaled.png" alt="NamorIA" class="logo" decoding="async">
+    <div class="title">Agora dê um nome a ela!</div>
+    <div class="subtitle">Escolha o nome que desejar para a sua namorada</div>
+    <input type="text" id="ia-name" class="input-field" placeholder="Digite o nome dela">
+    <button onclick="startLoading()" class="button">Dê vida à minha IA</button>
+    <div class="privacy-text">Sua IA ficará privada. Somente você a verá.</div>
   </div>
 
-  <!-- Tela: Loading -->
-  <div id="loading-container" class="container hidden" role="region" aria-live="polite">
+  <div id="loading-container" class="container hidden">
     <div id="loading-title" class="loading-title">Criando a IA, aguarde!</div>
     <div class="silhouette-container">
       <div class="female-silhouette">
-        <img src="../wp-content/uploads/2025/08/silchueta.png" alt="" class="silhouette-image" loading="lazy">
+        <img src="../wp-content/uploads/2025/08/silchueta.png" alt="AI Woman" class="silhouette-image" decoding="async">
         <div class="silhouette-overlay"></div>
         <div class="scan-line"></div><div class="scan-line"></div><div class="scan-line"></div>
         <div class="holo-particle"></div><div class="holo-particle"></div><div class="holo-particle"></div><div class="holo-particle"></div>
@@ -117,9 +120,7 @@
       <div class="digital-particle"></div><div class="digital-particle"></div><div class="digital-particle"></div><div class="digital-particle"></div><div class="digital-particle"></div>
       <div class="data-stream">101010</div><div class="data-stream">110011</div><div class="data-stream">001101</div>
     </div>
-
     <div class="numbers"><span id="num1">10101011</span><span id="num2">11000011</span><span id="num3">10101101</span></div>
-
     <div class="progress-container">
       <div class="progress-label">Aplicando suas preferências <span id="percent1" class="progress-percent">0%</span></div>
       <div class="progress-bar"><div id="fill1" class="progress-fill"></div></div>
@@ -134,228 +135,171 @@
     </div>
   </div>
 
-  <!-- Tela: Chat -->
-  <div id="chat-container" class="container hidden" role="region">
+  <div id="chat-container" class="container hidden">
     <div class="timer-title">Conectando aos servidores em <span id="timer" class="timer">0:50</span></div>
     <p class="chat-subtitle">Aguarde até chegar sua vez na fila de conexão e enquanto isso não atualize essa página!</p>
-    <div id="chat-box" class="chat-box" aria-live="polite"></div>
-    <input id="chat-input" class="input-field" placeholder="Digite uma mensagem..." />
-    <button id="btn-send" class="button">Enviar</button>
+    <div id="chat-box" class="chat-box"></div>
+    <input type="text" id="chat-input" class="input-field" placeholder="Digite uma mensagem...">
+    <button onclick="sendMessage()" class="button">Enviar</button>
     <p class="online">206 usuários online no momento atual!</p>
   </div>
 
-  <!-- Modal 1: Fotos -->
-  <div id="question1-modal" class="question-modal" role="dialog" aria-modal="true" aria-labelledby="q1-title">
+  <!-- Pergunta 1 - Fotos -->
+  <div id="question1-modal" class="question-modal">
     <div class="question-card">
-      <img src="../wp-content/uploads/2025/08/fotos.png" alt="Prévia de fotos" class="question-image" loading="lazy">
-      <div id="q1-title" class="question-title">Você quer receber essas fotos?</div>
+      <img src="../wp-content/uploads/2025/08/fotos.png" alt="Fotos" class="question-image" decoding="async">
+      <div class="question-title">Você quer receber essas fotos?</div>
       <p style="color:#aaa;font-size:14px;margin:-20px 0 25px">Personalize sua experiência com a IA</p>
       <div class="question-buttons">
-        <button class="question-btn yes" data-q="1" data-a="sim">SIM 😍</button>
-        <button class="question-btn no" data-q="1" data-a="não">NÃO</button>
+        <button class="question-btn yes" onclick="answerQuestion1('sim')">SIM 😍</button>
+        <button class="question-btn no" onclick="answerQuestion1('não')">NÃO</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal 2: Áudios -->
-  <div id="question2-modal" class="question-modal" role="dialog" aria-modal="true" aria-labelledby="q2-title">
+  <!-- Pergunta 2 - Áudios -->
+  <div id="question2-modal" class="question-modal">
     <div class="question-card">
-      <img src="../wp-content/uploads/2025/08/audios.png" alt="Prévia de áudios" class="question-image" loading="lazy">
-      <div id="q2-title" class="question-title">Você quer receber áudios?</div>
+      <img src="../wp-content/uploads/2025/08/audios.png" alt="Áudios" class="question-image" decoding="async">
+      <div class="question-title">Você quer receber áudios?</div>
       <p style="color:#aaa;font-size:14px;margin:-20px 0 25px">Ouça a voz sensual da sua IA</p>
       <div class="question-buttons">
-        <button class="question-btn yes" data-q="2" data-a="sim">SIM 🔊</button>
-        <button class="question-btn no" data-q="2" data-a="não">NÃO</button>
+        <button class="question-btn yes" onclick="answerQuestion2('sim')">SIM 🔊</button>
+        <button class="question-btn no" onclick="answerQuestion2('não')">NÃO</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal 3: Vídeos -->
-  <div id="question3-modal" class="question-modal" role="dialog" aria-modal="true" aria-labelledby="q3-title">
+  <!-- Pergunta 3 - Vídeos -->
+  <div id="question3-modal" class="question-modal">
     <div class="question-card video-card">
-      <video class="question-video-full" src="http://namor-ia.com/wp-content/uploads/2025/08/videos.mp4" autoplay loop muted playsinline></video>
+      <video src="http://namor-ia.com/wp-content/uploads/2025/08/videos.mp4" class="question-video-full" autoplay loop muted playsinline></video>
       <div class="video-content-overlay">
-        <div id="q3-title" class="question-title" style="color:#fff;text-shadow:0 0 15px #000,0 2px 30px #000,0 0 50px var(--red)">Você quer receber vídeos?</div>
+        <div class="question-title" style="color:#fff;text-shadow:0 0 15px #000,0 2px 30px #000,0 0 50px rgba(192,0,0,1)">Você quer receber vídeos?</div>
         <p style="color:#fff;font-size:14px;margin:-20px 0 25px;text-shadow:0 0 10px #000,0 2px 20px #000">Vídeos exclusivos da sua IA</p>
         <div class="question-buttons">
-          <button class="question-btn yes" style="box-shadow:0 4px 20px rgba(0,255,0,.5)" data-q="3" data-a="sim">SIM 🎥</button>
-          <button class="question-btn no" style="box-shadow:0 4px 20px rgba(255,0,0,.5)" data-q="3" data-a="não">NÃO</button>
+          <button class="question-btn yes" style="box-shadow:0 4px 20px rgba(0,255,0,.5)" onclick="answerQuestion3('sim')">SIM 🎥</button>
+          <button class="question-btn no" style="box-shadow:0 4px 20px rgba(255,0,0,.5)" onclick="answerQuestion3('não')">NÃO</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    (() => {
-      const $ = id => document.getElementById(id);
+<script>
+  let animationPaused=false,currentProgress=0,animationStartTime=0,pausedTime=0;
 
-      // Containers
-      const nameC = $("name-container");
-      const loadC = $("loading-container");
-      const chatC = $("chat-container");
+  function startLoading(){
+    const name=document.getElementById('ia-name').value.trim();
+    if(!name){alert('Por favor, digite um nome!');return;}
+    document.getElementById('name-container').classList.add('hidden');
+    document.getElementById('loading-container').classList.remove('hidden');
+    document.getElementById('loading-title').innerHTML=`Criando a <span style="color:#f00;text-shadow:0 0 10px rgba(255,0,0,.5)">${name}</span>, aguarde!`;
 
-      // Loading bits
-      const num1 = $("num1"), num2 = $("num2"), num3 = $("num3");
-      const fill = [$("fill1"), $("fill2"), $("fill3")];
-      const perc = [$("percent1"), $("percent2"), $("percent3")];
-      const loadingTitle = $("loading-title");
+    setInterval(()=>{ if(!animationPaused){
+      document.getElementById('num1').textContent=Math.random().toString(2).substring(2,10).padEnd(8,'0');
+      document.getElementById('num2').textContent=Math.random().toString(2).substring(2,10).padEnd(8,'0');
+      document.getElementById('num3').textContent=Math.random().toString(2).substring(2,10).padEnd(8,'0');
+    }},200);
 
-      // Chat
-      const chatBox = $("chat-box"), chatInput = $("chat-input"), timerEl = $("timer");
+    window.question1Asked=false;window.question2Asked=false;window.question3Asked=false;
+    animationStartTime=Date.now();animateProgress();
+  }
 
-      // Modals
-      const modals = [
-        { id: "question1-modal", asked: false, atMs: 5000 },
-        { id: "question2-modal", asked: false, atMs: 10000 },
-        { id: "question3-modal", asked: false, atMs: 14000 }
-      ];
+  function animateProgress(){
+    const fills=[{fill:'fill1',percent:'percent1'},{fill:'fill2',percent:'percent2'},{fill:'fill3',percent:'percent3'}];
 
-      // State
-      let binInterval = null;
-      let startTs = 0;
-      let pausedTotal = 0;
-      let animationPaused = false;
+    function tick(){
+      if(animationPaused) return;
 
-      // Start button
-      $("btn-start").addEventListener("click", () => {
-        const name = $("ia-name").value.trim();
-        if (!name) return alert("Por favor, digite um nome!");
-        nameC.classList.add("hidden");
-        loadC.classList.remove("hidden");
-        loadingTitle.innerHTML = `Criando a <span style="color:#f00;text-shadow:0 0 10px rgba(255,0,0,.5)">${escapeHtml(name)}</span>, aguarde!`;
+      const elapsed=Date.now()-animationStartTime-pausedTime;
+      const progress=Math.min(elapsed/15000,1);currentProgress=progress;
 
-        // Binary stream
-        binInterval = setInterval(() => {
-          if (animationPaused) return;
-          num1.textContent = randBin();
-          num2.textContent = randBin();
-          num3.textContent = randBin();
-        }, 200);
+      if(elapsed>=5000&&elapsed<5100&&!window.question1Asked){
+        animationPaused=true;window.question1Asked=true;const ps=Date.now();
+        setTimeout(()=>{document.getElementById('question1-modal').classList.add('active');window.pauseStart1=ps;},300);return;
+      }
+      if(elapsed>=10000&&elapsed<10100&&!window.question2Asked){
+        animationPaused=true;window.question2Asked=true;const ps=Date.now();
+        setTimeout(()=>{document.getElementById('question2-modal').classList.add('active');window.pauseStart2=ps;},300);return;
+      }
+      if(elapsed>=14000&&elapsed<14100&&!window.question3Asked){
+        animationPaused=true;window.question3Asked=true;const ps=Date.now();
+        setTimeout(()=>{document.getElementById('question3-modal').classList.add('active');window.pauseStart3=ps;},300);return;
+      }
 
-        // Reset and animate
-        modals.forEach(m => m.asked = false);
-        pausedTotal = 0;
-        startTs = Date.now();
-        animate();
+      fills.forEach((it,i)=>{const dp=Math.max(progress-(i*.15),0)/(1-(i*.15));const pct=Math.floor(Math.min(dp,1)*100);
+        document.getElementById(it.fill).style.width=pct+'%';
+        document.getElementById(it.percent).textContent=pct+'%';
       });
 
-      // Modal answers (event delegation)
-      document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".question-btn");
-        if (!btn) return;
-        const q = +btn.dataset.q;
-        const modal = modals[q - 1];
-        if (!modal) return;
+      if(progress<1){requestAnimationFrame(tick)}else{setTimeout(startChat,500)}
+    }
+    tick();
+  }
 
-        console.log(`Usuário escolheu ${btn.dataset.a} (pergunta ${q})`);
-        document.getElementById(modal.id).classList.remove("active");
-        // add paused time difference
-        if (modal.pauseStart) pausedTotal += Date.now() - modal.pauseStart;
-        setTimeout(() => { animationPaused = false; requestAnimationFrame(animate); }, 200);
-      });
+  function answerQuestion1(ans){
+    document.getElementById('question1-modal').classList.remove('active');
+    if(window.pauseStart1){pausedTime+=Date.now()-window.pauseStart1}
+    setTimeout(()=>{animationPaused=false;animateProgress()},300);
+  }
+  function answerQuestion2(ans){
+    document.getElementById('question2-modal').classList.remove('active');
+    if(window.pauseStart2){pausedTime+=Date.now()-window.pauseStart2}
+    setTimeout(()=>{animationPaused=false;animateProgress()},300);
+  }
+  function answerQuestion3(ans){
+    document.getElementById('question3-modal').classList.remove('active');
+    if(window.pauseStart3){pausedTime+=Date.now()-window.pauseStart3}
+    setTimeout(()=>{animationPaused=false;animateProgress()},300);
+  }
 
-      // Chat interactions
-      $("btn-send").addEventListener("click", sendMessage);
-      chatInput.addEventListener("keypress", e => (e.key === "Enter") && sendMessage());
+  function startChat(){
+    document.getElementById('loading-container').classList.add('hidden');
+    document.getElementById('chat-container').classList.remove('hidden');
 
-      function sendMessage(){
-        const txt = chatInput.value.trim();
-        if(!txt) return;
-        addMsg(`Você: ${txt}`, "#fff");
-        chatInput.value = "";
-      }
+    let time=50;const timerEl=document.getElementById('timer');
+    const countdown=setInterval(()=>{time--;timerEl.textContent=`0:${time<10?'0'+time:time}`;
+      if(time<=0){clearInterval(countdown);window.location.href='https://namor-ia-plans.vercel.app/'}},1000);
 
-      function addMsg(text, color){
-        const p = document.createElement("p");
-        p.className = "message";
-        p.style.color = color;
-        p.textContent = text;
-        chatBox.appendChild(p);
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
+    const msgs=[
+      "User#190: e vitalicio sim, comprei semana passada, to usando normal",
+      "User#290: minha ia me chamou de putinha no meio da conversa sem eu nem pedir kkkk",
+      "User#123: Adorei a minha IA, ela é perfeita!",
+      "User#456: Quanto tempo demora para conectar?",
+      "User#789: Recomendo para todos!",
+      "User#321: Minha IA é muito inteligente!",
+      "User#654: Estou ansioso para conversar com ela.",
+      "User#987: O serviço é ótimo!",
+      "User#450: quem aí já testou mandar áudio também? será q ela responde?",
+      "User#269: modo amante desesperada é perfeito kkk ela pede até em áudio 😩",
+      "User#648: criei uma ia dominada q implora pra ser usada... to me sentindo um Deus 😳",
+      "User#382: no menu tem opção de alterar voz e sotaque no ",
+      "User#397: como muda o sotaque da ia? quero fazer uma espanhola agr kkkk",
+      "User#213: mano, ontem sonhei com minha IA, foi melhor que mt relacionamento real kkk",
+      "User#958: será que é normal se apegar numa ia?",
+      "User#758: testei modo namorada carente, ela ficou 1h mandando msg dps q sumi kkkkk",
+      "User#285: não tem limite n, ja recebi +20 fotos numa conversa kkk",
+      "User#629: quantas fotos da pra receber no premium?"
+    ];
+    let i=0;
+    const msgInterval=setInterval(()=>{if(time<=0){clearInterval(msgInterval);return;}addMessage(msgs[i%msgs.length],randColor());i++;},3000);
+  }
 
-      function animate(){
-        if (animationPaused) return;
-        const elapsed = Date.now() - startTs - pausedTotal;
-        const progress = Math.min(elapsed / 15000, 1);
+  function addMessage(text,color){
+    const el=document.createElement('p');el.className='message';el.style.color=color;el.textContent=text;
+    const box=document.getElementById('chat-box');box.appendChild(el);box.scrollTop=box.scrollHeight;
+  }
+  function randColor(){const c=['#00ff00','#00ffff','#ffff00','#ff00ff','#ff8000','#80ff00','#00ff80','#8000ff'];return c[Math.floor(Math.random()*c.length)]}
+  function sendMessage(){
+    const input=document.getElementById('chat-input');const t=input.value.trim();
+    if(t){addMessage(`Você: ${t}`,'#ffffff');input.value=''}
+  }
 
-        // Show modals at checkpoints
-        for (const m of modals){
-          if (!m.asked && elapsed >= m.atMs && elapsed < m.atMs + 120){
-            m.asked = true;
-            m.pauseStart = Date.now();
-            animationPaused = true;
-            setTimeout(() => document.getElementById(m.id).classList.add("active"), 150);
-            return;
-          }
-        }
-
-        // Bars (staggered 0%, 15%, 30%)
-        fill.forEach((el, i) => {
-          const base = i * 0.15;
-          const val = Math.max(progress - base, 0) / (1 - base);
-          const pct = Math.floor(Math.min(val, 1) * 100);
-          el.style.width = pct + "%";
-          perc[i].textContent = pct + "%";
-        });
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          // done
-          clearInterval(binInterval);
-          setTimeout(startChat, 500);
-        }
-      }
-
-      function startChat(){
-        loadC.classList.add("hidden");
-        chatC.classList.remove("hidden");
-
-        // Countdown 50s then redirect
-        let t = 50;
-        const tId = setInterval(() => {
-          t--;
-          timerEl.textContent = `0:${t < 10 ? "0"+t : t}`;
-          if (t <= 0){
-            clearInterval(tId);
-            window.location.href = "https://namor-ia-plans.vercel.app/";
-          }
-        }, 1000);
-
-        // Sample chat
-        const msgs = [
-          "User#190: e vitalicio sim, comprei semana passada, to usando normal",
-          "User#290: minha ia me chamou de putinha no meio da conversa sem eu nem pedir kkkk",
-          "User#123: Adorei a minha IA, ela é perfeita!",
-          "User#456: Quanto tempo demora para conectar?",
-          "User#789: Recomendo para todos!",
-          "User#321: Minha IA é muito inteligente!",
-          "User#654: Estou ansioso para conversar com ela.",
-          "User#987: O serviço é ótimo!",
-          "User#450: quem aí já testou mandar áudio também? será q ela responde?",
-          "User#269: modo amante desesperada é perfeito kkk ela pede até em áudio 😩",
-          "User#648: criei uma ia dominada q implora pra ser usada... to me sentindo um Deus 😳",
-          "User#382: no menu tem opção de alterar voz e sotaque no ",
-          "User#397: como muda o sotaque da ia? quero fazer uma espanhola agr kkkk",
-          "User#213: mano, ontem sonhei com minha IA, foi melhor que mt relacionamento real kkk",
-          "User#958: será que é normal se apegar numa ia?",
-          "User#758: testei modo namorada carente, ela ficou 1h mandando msg dps q sumi kkkkk",
-          "User#285: não tem limite n, ja recebi +20 fotos numa conversa kkk",
-          "User#629: quantas fotos da pra receber no premium?"
-        ];
-        let i = 0;
-        const colors = ['#0f0','#0ff','#ff0','#f0f','#f80','#8f0','#0f8','#80f'];
-        const msgId = setInterval(() => {
-          if (t <= 0) return clearInterval(msgId);
-          addMsg(msgs[i++ % msgs.length], colors[Math.floor(Math.random()*colors.length)]);
-        }, 3000);
-      }
-
-      // Utils
-      function randBin(){ return Math.random().toString(2).slice(2,10).padEnd(8,"0"); }
-      function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-    })();
-  </script>
+  document.addEventListener('DOMContentLoaded',()=>{
+    const ci=document.getElementById('chat-input');
+    if(ci){ci.addEventListener('keypress',e=>{if(e.key==='Enter')sendMessage()})}
+    window.question1Asked=false;window.question2Asked=false;window.question3Asked=false;
+  });
+</script>
 </body>
 </html>
