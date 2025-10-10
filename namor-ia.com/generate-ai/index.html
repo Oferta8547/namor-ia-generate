@@ -317,13 +317,14 @@
               <div id="question3-modal" class="question-modal">
                 <div class="question-card video-card">
                   <video
-                    src="http://namor-ia.com/wp-content/uploads/2025/08/videos.mp4"
-                    class="question-video-full"
-                    autoplay
-                    loop
-                    muted
-                    playsinline
-                    preload="none">
+  id="modalVideo"
+  src="http://namor-ia.com/wp-content/uploads/2025/08/videos.mp4"
+  class="question-video-full"
+  autoplay
+  loop
+  muted
+  playsinline
+  preload="auto">
                   </video>
                   <div class="video-content-overlay">
                     <div class="question-title" style="color:#fff;text-shadow:0 0 15px rgba(0,0,0,1),0 2px 30px rgba(0,0,0,1),0 0 50px rgba(192,0,0,1);">
@@ -377,10 +378,16 @@
                       setTimeout(()=>{ document.getElementById('question2-modal').classList.add('active'); window.pauseStart2=pauseStart; },300); return;
                     }
                     if(elapsed>=14000 && elapsed<14100 && !window.question3Asked){
-                      animationPaused=true; window.question3Asked=true; const pauseStart=Date.now();
-                      setTimeout(()=>{ document.getElementById('question3-modal').classList.add('active'); window.pauseStart3=pauseStart; },300); return;
-                    }
-
+  animationPaused=true; window.question3Asked=true; const pauseStart=Date.now();
+  setTimeout(()=>{ 
+    document.getElementById('question3-modal').classList.add('active'); 
+    const video = document.getElementById('modalVideo');
+    setTimeout(() => {
+      video.play().catch(e => console.log('Autoplay:', e));
+    }, 100);
+    window.pauseStart3=pauseStart; 
+  },300); return;
+}
                     fills.forEach((item,index)=>{
                       const delayed=Math.max(progress-(index*0.15),0)/(1-(index*0.15));
                       const percent=Math.floor(Math.min(delayed,1)*100);
@@ -587,3 +594,4 @@
   <script src="../wp-content/plugins/elementor-pro/assets/js/preloaded-elements-handlers.min3fd0.js?ver=3.8.2" id="pro-preloaded-elements-handlers-js" defer></script>
 </body>
 </html>
+
