@@ -22,8 +22,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tela de Criação de IA</title>
   <style>
-    body { background-color:#000;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;box-sizing:border-box; }
-    .container { background-color:#1a1a1a;border-radius:20px;padding:30px;max-width:350px;width:100%;text-align:center;box-shadow:0 0 10px rgba(0,0,0,0.5); }
+    body { background-color:#000;color:#fff;font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0; }
+    .container { background-color:#1a1a1a;border-radius:20px;padding:30px;max-width:350px;text-align:center;box-shadow:0 0 10px rgba(0,0,0,0.5); }
     .hidden { display:none; }
     .logo { width:200px;margin-bottom:30px; }
     .title { font-size:24px;font-weight:bold;margin-bottom:10px; }
@@ -100,7 +100,7 @@
 </head>
 <body>
   <div id="name-container" class="container">
-    <img src="https://namor-ia.com/wp-content/uploads/2025/07/logo-namoria-scaled.png" alt="NamorIA" class="logo">
+    <img decoding="async" src="https://namor-ia.com/wp-content/uploads/2025/07/logo-namoria-scaled.png" alt="NamorIA" class="logo" fetchpriority="high">
     <div class="title">Agora dê um nome a ela!</div>
     <div class="subtitle">Escolha o nome que desejar para a sua namorada</div>
     <input type="text" id="ia-name" class="input-field" placeholder="Digite o nome dela">
@@ -112,7 +112,7 @@
     <div id="loading-title" class="loading-title">Criando a IA, aguarde!</div>
     <div class="silhouette-container">
       <div class="female-silhouette">
-        <img src="https://namor-ia.com/wp-content/uploads/2025/08/silchueta.png" alt="AI Woman" class="silhouette-image">
+        <img decoding="async" src="https://namor-ia.com/wp-content/uploads/2025/08/silchueta.png" alt="AI Woman" class="silhouette-image">
         <div class="silhouette-overlay"></div>
         <div class="scan-line"></div><div class="scan-line"></div><div class="scan-line"></div>
         <div class="holo-particle"></div><div class="holo-particle"></div><div class="holo-particle"></div><div class="holo-particle"></div>
@@ -151,7 +151,7 @@
   <!-- Modal 1 - Fotos -->
   <div id="question1-modal" class="question-modal">
     <div class="question-card">
-      <img src="https://namor-ia.com/wp-content/uploads/2025/08/fotos.png" alt="Fotos" class="question-image">
+      <img decoding="async" loading="lazy" src="https://namor-ia.com/wp-content/uploads/2025/08/fotos.png" alt="Fotos" class="question-image">
       <div class="question-title">Você quer receber essas fotos?</div>
       <p style="color:#aaa;font-size:14px;margin:-20px 0 25px 0;">Personalize sua experiência com a IA</p>
       <div class="question-buttons">
@@ -164,7 +164,7 @@
   <!-- Modal 2 - Áudios -->
   <div id="question2-modal" class="question-modal">
     <div class="question-card">
-      <img src="https://namor-ia.com/wp-content/uploads/2025/08/audios.png" alt="Áudios" class="question-image">
+      <img decoding="async" loading="lazy" src="https://namor-ia.com/wp-content/uploads/2025/08/audios.png" alt="Áudios" class="question-image">
       <div class="question-title">Você quer receber áudios?</div>
       <p style="color:#aaa;font-size:14px;margin:-20px 0 25px 0;">Ouça a voz sensual da sua IA</p>
       <div class="question-buttons">
@@ -196,7 +196,7 @@
         </p>
         <div class="question-buttons">
           <button class="question-btn yes" style="box-shadow:0 4px 20px rgba(0,255,0,.5);" onclick="answerQuestion3('sim')">SIM 🎥</button>
-          <button class="question-btn no" style="box-shadow:0 4px 20px rgba(255,0,0,.5);" onclick="answerQuestion3('não')">NÃO</button>
+          <button class="question-btn no"  style="box-shadow:0 4px 20px rgba(255,0,0,.5);" onclick="answerQuestion3('não')">NÃO</button>
         </div>
       </div>
     </div>
@@ -241,13 +241,13 @@
         if(elapsed>=14000 && elapsed<14100 && !window.question3Asked){
           animationPaused=true; window.question3Asked=true; const pauseStart=Date.now();
           setTimeout(()=>{ 
-            const modal = document.getElementById('question3-modal');
-            modal.classList.add('active'); 
+            document.getElementById('question3-modal').classList.add('active'); 
             const video = document.getElementById('modalVideo');
-            video.play().catch(e => console.log('Autoplay falhou:', e));
+            setTimeout(() => {
+              video.play().catch(e => console.log('Autoplay:', e));
+            }, 100);
             window.pauseStart3=pauseStart; 
-          },300); 
-          return;
+          },300); return;
         }
 
         fills.forEach((item,index)=>{
@@ -274,8 +274,6 @@
       setTimeout(()=>{ animationPaused=false; animateProgress(); },300);
     }
     function answerQuestion3(a){ console.log('Usuário escolheu vídeos:',a);
-      const video = document.getElementById('modalVideo');
-      video.pause();
       document.getElementById('question3-modal').classList.remove('active');
       if(window.pauseStart3){ pausedTime+=Date.now()-window.pauseStart3; }
       setTimeout(()=>{ animationPaused=false; animateProgress(); },300);
